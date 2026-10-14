@@ -1,0 +1,184 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>AIMETA SIGNAL</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;700;800&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#09050f;--c:rgba(255,255,255,.05);--ln:rgba(167,139,250,.24);--tx:#ece8f8;--mu:#9a90b8;--a:#8b5cf6;--b:#22d3ee;--up:#34d399;--dn:#fb7185;--wa:#fbbf24;--g:linear-gradient(120deg,#8b5cf6,#22d3ee);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(900px 500px at 80% -10%,#2a1359 0,transparent 60%),radial-gradient(700px 500px at -10% 40%,#0c2a4a 0,transparent 60%),var(--bg);color:var(--tx);font:500 15px/1.45 Manrope,system-ui,sans-serif;min-height:100vh}
+h1,h2,.hd{font-family:Sora,system-ui,sans-serif}
+#app{max-width:760px;margin:0 auto;padding:12px 14px 40px}
+.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px;border:1px solid var(--ln);border-radius:22px;background:rgba(20,10,40,.7);backdrop-filter:blur(10px);position:sticky;top:8px;z-index:5}
+.pill,.btn{border:1px solid var(--ln);background:var(--c);color:var(--tx);border-radius:999px;padding:9px 15px;font:700 14px Manrope,sans-serif;cursor:pointer}
+.pill.on{background:var(--g);border-color:transparent;color:#07040d}
+#clk{font:600 17px ui-monospace,Menlo,monospace;letter-spacing:.12em;margin-left:auto;padding:8px 14px;border:1px solid var(--ln);border-radius:999px}
+.demo{margin:10px 0;padding:8px 14px;border-radius:14px;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.4);color:var(--wa);font-size:13px}
+h1{font-size:clamp(40px,12vw,68px);margin:18px 0 8px;letter-spacing:-.03em;background:linear-gradient(90deg,#e9e3ff,#22d3ee);-webkit-background-clip:text;background-clip:text;color:transparent}
+.mu{color:var(--mu)}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.card{border:1px solid var(--ln);border-radius:26px;background:linear-gradient(160deg,rgba(139,92,246,.16),rgba(10,5,20,.7));padding:18px;margin:12px 0}
+.cat{display:flex;gap:14px;align-items:center;cursor:pointer;min-height:130px;position:relative;overflow:hidden}
+.cat:nth-of-type(2){background:linear-gradient(160deg,rgba(34,211,238,.16),rgba(10,5,20,.7))}
+.ico{font:800 22px Sora;width:64px;height:64px;border-radius:20px;display:grid;place-items:center;background:rgba(255,255,255,.07);border:1px solid var(--ln);flex:none}
+.go{margin-left:auto;width:52px;height:52px;border-radius:18px;display:grid;place-items:center;background:var(--g);color:#07040d;font-size:22px;flex:none}
+.tag{font-size:12px;padding:3px 10px;border-radius:99px;border:1px solid var(--ln);color:var(--b);margin-right:6px}
+input,select{width:100%;background:rgba(0,0,0,.35);border:1px solid var(--ln);border-radius:16px;padding:13px 15px;color:var(--tx);font:600 16px Manrope}
+.item{display:flex;align-items:center;gap:10px;cursor:pointer;padding:14px 16px;margin:10px 0}
+.item.off{opacity:.45;cursor:not-allowed}
+.big{font:800 40px Sora;letter-spacing:-.02em}
+.CALL{color:var(--up)}.PUT{color:var(--dn)}.WAIT,.UNAVAILABLE{color:var(--wa)}
+.main{background:var(--g);color:#07040d;border:0;padding:15px 24px;font-size:16px}
+canvas{width:100%;height:300px;border-radius:18px;background:rgba(0,0,0,.3);border:1px solid var(--ln);display:block}
+ul{padding-left:18px;margin:8px 0}li{margin:3px 0}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:6px 4px;border-bottom:1px solid var(--ln);text-align:left}
+.sp{display:inline-block;width:18px;height:18px;border:3px solid var(--ln);border-top-color:var(--b);border-radius:50%;animation:r .8s linear infinite;vertical-align:middle}@keyframes r{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.sp{animation:none}}
+</style></head><body><div id="app"></div>
+<script>
+const D={title:'СИГНАЛЫ|SIGNALS|СИГНАЛИ',desc:'Выбирай пару и получай оценку алгоритма.|Pick a pair and get an algorithm estimate.|Обирай пару й отримуй оцінку алгоритму.',
+demo:'ДЕМО-РЕЖИМ: котировки симулированы, это не реальный рынок. Индикаторы и логика сигналов — настоящие.|DEMO MODE: quotes are simulated, not a real market. Indicators and signal logic are real.|ДЕМО-РЕЖИМ: котирування симульовані, це не реальний ринок. Індикатори та логіка сигналів справжні.',
+fx:'Валюты|Currencies|Валюти',cr:'Криптовалюты|Crypto|Криптовалюти',eq:'Акции|Stocks|Акції',cm:'Сырьёвые товары|Commodities|Сировинні товари',cmd:'Нефть, газ, золото, серебро и другие сырьевые товары.|Oil, gas, gold, silver and other commodities.|Нафта, газ, золото, срібло та інші сировинні товари.',
+fxd:'Валютные пары, поиск и статус готовности.|FX pairs, search and readiness status.|Валютні пари, пошук і статус готовності.',
+crd:'Топ активы к USDT. Оценка CALL / PUT + график.|Top assets vs USDT. CALL / PUT estimate + chart.|Топ активи до USDT. Оцінка CALL / PUT + графік.',
+eqd:'Популярные акции и график свечей.|Popular stocks and candle chart.|Популярні акції та свічковий графік.',
+n:'{0} инструм.|{0} items|{0} інстр.',home:'Главная|Home|Головна',back:'Назад|Back|Назад',tolist:'К списку|To list|До списку',
+srch:'Поиск инструмента…|Search instrument…|Пошук інструмента…',reset:'Сброс|Reset|Скидання',all:'Все|All|Усі',
+lim:'лимит: осталось {0}|limit: {0} left|ліміт: залишилось {0}',st:'статус|status|статус',ready:'ГОТОВО|READY|ГОТОВО',nolim:'ЛИМИТ|LIMIT|ЛІМІТ',
+instr:'Инструмент|Instrument|Інструмент',sig:'СИГНАЛ|SIGNAL|СИГНАЛ',time:'ВРЕМЯ|TIME|ЧАС',get:'Получить сигнал|Get signal|Отримати сигнал',
+s30:'30 сек|30 sec|30 сек',s60:'1 минута|1 minute|1 хвилина',s180:'3 минуты|3 minutes|3 хвилини',s300:'5 минут|5 minutes|5 хвилин',
+empty:'Свечной график появится после получения сигнала.|The candle chart appears after you get a signal.|Свічковий графік з’явиться після отримання сигналу.',
+price:'Цена|Price|Ціна',chg:'за 5 мин|per 5 min|за 5 хв',
+CALL:'CALL — рост|CALL — up|CALL — зростання',PUT:'PUT — падение|PUT — down|PUT — падіння',WAIT:'WAIT — нет чёткой картины|WAIT — no clear setup|WAIT — немає чіткої картини',UNAVAILABLE:'ДАННЫЕ НЕДОСТУПНЫ|DATA UNAVAILABLE|ДАНІ НЕДОСТУПНІ',
+sc:'Оценка: бычья {0} / медвежья {1}. Это оценка алгоритма, не вероятность прибыли.|Score: bullish {0} / bearish {1}. An algorithm estimate, not a profit probability.|Оцінка: бича {0} / ведмежа {1}. Це оцінка алгоритму, а не ймовірність прибутку.',
+fac:'Факторы|Factors|Фактори',exp:'Действует до {0}|Valid until {0}|Діє до {0}',left:'осталось {0} с|{0} s left|залишилось {0} с',
+hz30:'Демо-свечи по 5 с. На реальных данных 30 с требует источник с секундными свечами.|Demo candles are 5 s. Real data needs a source with second-level candles for 30 s.|Демо-свічки по 5 с. На реальних даних 30 с потребує джерела з секундними свічками.',
+e1:'EMA 9 выше EMA 21|EMA 9 above EMA 21|EMA 9 вище EMA 21',e2:'EMA 9 ниже EMA 21|EMA 9 below EMA 21|EMA 9 нижче EMA 21',
+f1:'EMA 21 выше EMA 50|EMA 21 above EMA 50|EMA 21 вище EMA 50',f2:'EMA 21 ниже EMA 50|EMA 21 below EMA 50|EMA 21 нижче EMA 50',
+r1:'RSI {0}: импульс вверх|RSI {0}: upward momentum|RSI {0}: імпульс угору',r2:'RSI {0}: импульс вниз|RSI {0}: downward momentum|RSI {0}: імпульс вниз',
+r3:'RSI {0}: перекупленность|RSI {0}: overbought|RSI {0}: перекупленість',r4:'RSI {0}: перепроданность|RSI {0}: oversold|RSI {0}: перепроданість',
+m1:'MACD-гистограмма растёт|MACD histogram rising|MACD-гістограма росте',m2:'MACD-гистограмма падает|MACD histogram falling|MACD-гістограма падає',
+p1:'Цена растёт последние свечи|Price rising over recent candles|Ціна росте останні свічки',p2:'Цена снижается последние свечи|Price falling over recent candles|Ціна знижується останні свічки',
+s1:'Цена у поддержки|Price near support|Ціна біля підтримки',s2:'Цена у сопротивления|Price near resistance|Ціна біля опору',
+v0:'Волатильность слишком низкая|Volatility too low|Волатильність надто низька',w0:'Перевес слабый или факторы противоречат|Edge is weak or factors conflict|Перевага слабка або фактори суперечать',
+d0:'Мало свечей для анализа|Not enough candles|Замало свічок для аналізу',d1:'Данные устарели|Data is stale|Дані застарілі',
+hist:'История сигналов|Signal history|Історія сигналів',pend:'ожидает|pending|очікує',ok:'верно|correct|вірно',bad:'неверно|wrong|невірно',na:'неопределённо|undetermined|невизначено',
+stat:'Статистика (демо-данные)|Stats (demo data)|Статистика (демо-дані)',
+stx:'Проверено: {0} · CALL {1} · PUT {2} · верно {3} · неверно {4} · доля {5}|Checked: {0} · CALL {1} · PUT {2} · correct {3} · wrong {4} · rate {5}|Перевірено: {0} · CALL {1} · PUT {2} · вірно {3} · невірно {4} · частка {5}',
+nost:'Пока нет проверенных сигналов.|No verified signals yet.|Ще немає перевірених сигналів.',
+CALL:'ВВЕРХ ▲ — оценка: рост|UP ▲ — estimate: rise|ВГОРУ ▲ — оцінка: зростання',PUT:'ВНИЗ ▼ — оценка: падение|DOWN ▼ — estimate: fall|ВНИЗ ▼ — оцінка: падіння',strL:'Сила сигнала|Signal strength|Сила сигналу',str1:'слабый|weak|слабкий',str2:'средний|medium|середній',str3:'сильный|strong|сильний',conf2:'ИИ и алгоритм расходятся|AI and algorithm disagree|ШІ та алгоритм розходяться',aiNote2:'ИИ даёт оценку направления по данным, а не гарантию. Слабый сигнал — низкая уверенность.|AI gives a directional estimate from the data, not a guarantee. A weak signal means low confidence.|ШІ дає оцінку напрямку за даними, а не гарантію. Слабкий сигнал — низька впевненість.',e1:'Быстрая EMA выше средней|Fast EMA above medium EMA|Швидка EMA вища за середню',e2:'Быстрая EMA ниже средней|Fast EMA below medium EMA|Швидка EMA нижча за середню',f1:'Средняя EMA выше медленной|Medium EMA above slow EMA|Середня EMA вища за повільну',f2:'Средняя EMA ниже медленной|Medium EMA below slow EMA|Середня EMA нижча за повільну',zin:'Крупнее|Zoom in|Ближче',zout:'Мельче|Zoom out|Далі',aiT:'ИИ-анализ|AI analysis|ШІ-аналіз',aiLate:'пришёл позже, не влияет на сигнал|arrived later, does not affect the signal|прийшов пізніше, не впливає на сигнал',aiNo:'ИИ недоступен — показан результат алгоритма|AI unavailable — algorithm result shown|ШІ недоступний — показано результат алгоритму',aiDis:'ИИ не подтвердил сигнал алгоритма → WAIT|AI did not confirm the algorithm signal → WAIT|ШІ не підтвердив сигнал алгоритму → WAIT',conf:'уверенность|confidence|впевненість',risk:'Риски|Risks|Ризики',aiNote:'ИИ даёт оценку по данным, а не гарантию. Сигнал выдаётся, только если алгоритм и ИИ согласны.|AI gives an estimate from the data, not a guarantee. A signal is issued only when the algorithm and AI agree.|ШІ дає оцінку за даними, а не гарантію. Сигнал видається, лише якщо алгоритм і ШІ згодні.'};
+const LN=['ru','en','ua'],ls={g(k,d){try{const v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch(e){return d}},s(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const S={lang:ls.g('lang',0),v:'home',cat:'fx',inst:null,hz:60,mode:'all',q:'',sort:'az',sig:null,zoom:80,busy:false};
+const t=(k,...a)=>{let s=((D[k]||k).split('|')[S.lang])||'';a.forEach((x,i)=>s=s.replace('{'+i+'}',x));return s};
+const CFG={thr:3,minDiff:1.5,minVol:2e-5,minCandles:60,stale:3,limit:10,w:{ema:2,ema2:1.5,rsi:1,macd:1.5,mom:1,sr:1},
+ hz:{30:{mom:1.5,ema:.8},60:{mom:1.2,ema:1},180:{mom:1,ema:1.2},300:{mom:.8,ema:1.4}}};
+const PAR={30:{e:[3,8,13],r:7,m:3},60:{e:[5,13,26],r:9,m:4},180:{e:[9,21,50],r:14,m:5},300:{e:[9,21,50],r:14,m:8}};
+const STEP={30:5,60:10,180:30,300:60},VOL={fx:4e-5,cr:2e-4,eq:8e-5,cm:6e-5};
+const mk=(c,l,m)=>l.map(([s,p],i)=>({s,c,p,m:m||(i<8?'live':'otc')}));
+const INS0=[...mk('fx',[['EUR/USD',1.08],['GBP/USD',1.27],['USD/JPY',150],['AUD/CAD',.89],['AUD/CHF',.58],['EUR/GBP',.85],['AED/CNY',1.98],['AUD/JPY',97],['USD/CAD',1.36],['NZD/USD',.6],['EUR/JPY',162],['USD/CHF',.9],['GBP/JPY',190],['CAD/JPY',110]]),
+ ...mk('cr',[['BTC/USDT',65000],['ETH/USDT',3200],['SOL/USDT',150],['XRP/USDT',.55],['BNB/USDT',580],['DOGE/USDT',.15]],'live'),
+ ...mk('eq',[['AAPL',190],['TSLA',240],['NVDA',900],['MSFT',420],['AMZN',180],['META',500]],'live')];
+const R={USD:1,EUR:1.08,GBP:1.27,AUD:.66,CAD:.73,CHF:1.11,JPY:.0067,NZD:.6,AED:.272,CNY:.138,TRY:.031,ZAR:.054,SGD:.74,HKD:.128,NOK:.093,SEK:.095,MXN:.058,BRL:.2,INR:.012,PLN:.25};
+const FXL='AED/CNY AUD/CAD AUD/CHF AUD/JPY AUD/NZD AUD/USD CAD/CHF CAD/JPY CHF/JPY EUR/AUD EUR/CAD EUR/CHF EUR/GBP EUR/JPY EUR/NZD EUR/USD GBP/AUD GBP/CAD GBP/CHF GBP/JPY GBP/NZD GBP/USD NZD/CAD NZD/CHF NZD/JPY NZD/USD USD/CAD USD/CHF USD/JPY USD/CNY USD/HKD USD/SGD USD/TRY USD/ZAR USD/MXN USD/BRL USD/INR USD/NOK USD/SEK USD/PLN USD/AED EUR/TRY EUR/ZAR EUR/SGD EUR/NOK EUR/SEK EUR/PLN EUR/MXN EUR/CNY EUR/HKD EUR/AED GBP/TRY GBP/ZAR GBP/SGD GBP/NOK GBP/SEK GBP/PLN GBP/MXN GBP/CNY GBP/AED AUD/SGD AUD/CNY AUD/HKD AUD/AED CAD/CNY CHF/CNY JPY/CNY NZD/SGD SGD/JPY NOK/JPY SEK/JPY MXN/JPY TRY/JPY ZAR/JPY CHF/NOK CHF/SEK CAD/SGD HKD/JPY'.split(' ').map(s=>{const[a,b]=s.split('/');return[s,R[a]/R[b]]});
+const CRL='BTC:65000 ETH:3200 SOL:150 XRP:.55 BNB:580 DOGE:.15 ADA:.45 AVAX:35 DOT:7 LINK:15 LTC:80 TRX:.12 ATOM:8 NEAR:6 APT:9 ARB:1.1 OP:2.4 SUI:1.5 TON:6 SHIB:.000025 BCH:450 ETC:27 UNI:8'.split(' ').map(s=>{const[a,p]=s.split(':');return[a+'/USDT',+p]});
+const EQL='AAPL:190 TSLA:240 NVDA:900 MSFT:420 AMZN:180 META:500 GOOGL:170 NFLX:620 AMD:160 INTC:32 BABA:80 BA:190 DIS:100 JPM:200 V:280 MA:470 KO:62 PEP:170 MCD:290 NKE:95 WMT:65 XOM:115 CVX:155 PFE:28 JNJ:155 PG:165 CSCO:50 ORCL:125 IBM:190 ADBE:520 CRM:270 PYPL:65 UBER:75 COIN:220 SHOP:75 QCOM:170 T:18'.split(' ').map(s=>{const[a,p]=s.split(':');return[a,+p]});
+const hs=s=>{let h=7;for(const c of s)h=Math.imul(h^c.charCodeAt(0),16777619);return(h>>>0)/4294967296};
+const L=(c,m,names,lo,hi)=>names.split(',').map(s=>({s,c,m,p:lo*Math.pow(hi/lo,hs(s+m))}));
+const GONE=new Set([]);
+const INS=[...L('fx','otc','AED/CNY,AUD/CAD,AUD/CHF,AUD/NZD,BHD/CNY,CAD/CHF,CHF/JPY,EUR/CHF,EUR/GBP,EUR/HUF,EUR/JPY,EUR/TRY,EUR/USD,GBP/USD,KES/USD,NGN/USD,SAR/CNY,UAH/USD,USD/BDT,USD/CNH,USD/COP,USD/EGP,USD/INR,USD/JPY,USD/MXN,USD/THB,USD/VND,YER/USD,ZAR/USD,AUD/JPY,USD/BRL,AUD/USD,CAD/JPY,USD/DZD,OMR/CNY,QAR/CNY,USD/PKR,USD/CHF,LBP/USD,USD/CLP,NZD/USD,USD/MYR,GBP/AUD,USD/SGD,NZD/JPY,MAD/USD,EUR/NZD,GBP/JPY,JOD/CNY,USD/PHP,CHF/NOK,USD/IDR,USD/CAD,TND/USD,USD/ARS',0.3,150),
+...L('fx','live','EUR/JPY,GBP/JPY,EUR/CAD,AUD/CHF,AUD/JPY,AUD/USD,CAD/CHF,CAD/JPY,CHF/JPY,EUR/CHF,EUR/GBP,EUR/USD,GBP/AUD,GBP/CAD,GBP/CHF,GBP/USD,USD/CAD,USD/CHF,USD/JPY,AUD/CAD,EUR/AUD',0.6,190),
+...L('cr','otc','Bitcoin,Litecoin,TRON,Polygon,Dogecoin,Cardano,Ethereum,Toncoin,Chainlink,BNB,Solana,Polkadot,Avalanche,Bitcoin ETF',0.1,60000),
+...L('cr','live','Dash,BCH/EUR,BCH/GBP,BCH/JPY,Chainlink,Ethereum,BTC/GBP,BTC/JPY',20,60000),
+...L('cm','otc','Brent Oil,WTI Crude Oil,Silver,Gold,Natural Gas,Palladium spot,Platinum spot',2,2500),
+...L('cm','live','Brent Oil,WTI Crude Oil,XAG/EUR,Silver,XAU/EUR,Gold,Natural Gas,Palladium spot,Platinum spot',2,2500),
+...mk('eq',EQL,'live')].filter(i=>!GONE.has(i.s));
+const nm=i=>i.s+(i.m==='otc'?' OTC':'');
+/* ---- simulated market (deterministic per instrument + second) ---- */
+function H(a,b){let x=(a^Math.imul(b|0,0x9e3779b1))>>>0;x=Math.imul(x^x>>>15,0x85ebca6b);x=Math.imul(x^x>>>13,0xc2b2ae35);return((x^x>>>16)>>>0)/4294967296}
+const sh=s=>{let h=7;for(const c of s)h=Math.imul(h^c.charCodeAt(0),16777619);return h>>>0},CA={};
+function pr(i,ts){const d=Math.floor(ts/86400),k=i.s+i.m+d;if(!CA[k]){const sd=sh(i.s+i.m),v=VOL[i.c],a=new Float64Array(86401);let x=0;
+ for(let j=1;j<=86400;j++){const g=H(sd,d*86400+j)+H(sd+1,d*86400+j)+H(sd+2,d*86400+j)-1.5;x+=v*2*g;a[j]=i.p*Math.exp(x)}CA[k]=a}return CA[k][ts-d*86400]}
+const now=()=>Math.floor(Date.now()/1000);
+function candles(i,hz,n=now()){const st=STEP[hz],end=Math.floor(n/st)*st,o=[];for(let j=119;j>=0;j--){const s=end-j*st,e=Math.min(s+st,n);let hi=-1e18,lo=1e18;for(let q=s;q<=e;q++){const p=pr(i,q);hi=Math.max(hi,p);lo=Math.min(lo,p)}o.push({s,e,o:pr(i,s),c:pr(i,e),h:hi,l:lo})}return o}
+/* ---- indicators ---- */
+function ema(a,p){const k=2/(p+1),o=[a[0]];for(let i=1;i<a.length;i++)o.push(a[i]*k+o[i-1]*(1-k));return o}
+function rsi(c,p=14){let g=0,l=0;for(let i=1;i<=p;i++){const d=c[i]-c[i-1];d>0?g+=d:l-=d}g/=p;l/=p;for(let i=p+1;i<c.length;i++){const d=c[i]-c[i-1];g=(g*(p-1)+Math.max(d,0))/p;l=(l*(p-1)+Math.max(-d,0))/p}return l===0?100:100-100/(1+g/l)}
+function atr(cs,p=14){let a=0;for(let i=1;i<=p;i++)a+=tr(cs,i);a/=p;for(let i=p+1;i<cs.length;i++)a=(a*(p-1)+tr(cs,i))/p;return a}
+const tr=(cs,i)=>Math.max(cs[i].h-cs[i].l,Math.abs(cs[i].h-cs[i-1].c),Math.abs(cs[i].l-cs[i-1].c));
+function macd(c){const a=ema(c,12),b=ema(c,26),l=a.map((x,i)=>x-b[i]),s=ema(l,9),h=l.map((x,i)=>x-s[i]);return{h:h[h.length-1],hp:h[h.length-2]}}
+function levels(cs){const r=[],s=[];for(let i=2;i<cs.length-2;i++){const x=cs[i];if([-2,-1,1,2].every(d=>x.h>cs[i+d].h))r.push(x.h);if([-2,-1,1,2].every(d=>x.l<cs[i+d].l))s.push(x.l)}return{r,s}}
+/* ---- Market Analysis Engine ---- */
+function analyze(cs,hz,n){const R=[],out={dec:'UNAVAILABLE',bull:0,bear:0,reasons:R,t:n,exp:n+hz};
+ if(!cs||cs.length<CFG.minCandles){R.push(['d0']);return out}
+ if(n-cs[cs.length-1].e>CFG.stale*STEP[hz]){R.push(['d1']);return out}
+ const P=PAR[hz],c=cs.map(x=>x.c),px=c[c.length-1],e9=ema(c,P.e[0]),e21=ema(c,P.e[1]),e50=ema(c,P.e[2]),L=c.length-1,rs=rsi(c,P.r),m=macd(c),at=atr(cs),W=CFG.w,Z=CFG.hz[hz];
+ let b=0,s=0;
+ if(e9[L]>e21[L]){b+=W.ema*Z.ema;R.push(['e1'])}else{s+=W.ema*Z.ema;R.push(['e2'])}
+ if(e21[L]>e50[L]){b+=W.ema2*Z.ema;R.push(['f1'])}else{s+=W.ema2*Z.ema;R.push(['f2'])}
+ const rv=rs.toFixed(0);
+ if(rs>75){s+=W.rsi;R.push(['r3',rv])}else if(rs<25){b+=W.rsi;R.push(['r4',rv])}else if(rs>55){b+=W.rsi;R.push(['r1',rv])}else if(rs<45){s+=W.rsi;R.push(['r2',rv])}
+ if(m.h>0&&m.h>m.hp){b+=W.macd;R.push(['m1'])}else if(m.h<0&&m.h<m.hp){s+=W.macd;R.push(['m2'])}
+ const mo=px-c[L-P.m];if(Math.abs(mo)>at*.3){if(mo>0){b+=W.mom*Z.mom;R.push(['p1'])}else{s+=W.mom*Z.mom;R.push(['p2'])}}
+ const lv=levels(cs.slice(-60)),sup=Math.max(...lv.s.filter(x=>x<px),-1),res=Math.min(...lv.r.filter(x=>x>px),1e18);
+ if(px-sup<at*.5&&sup>0){b+=W.sr;R.push(['s1'])}else if(res-px<at*.5&&res<1e17){s+=W.sr;R.push(['s2'])}
+ Object.assign(out,{bull:+b.toFixed(1),bear:+s.toFixed(1),price:px,rsi:rs,atrp:at/px,e9:e9[L],e21:e21[L],e50:e50[L],mh:m.h,sup:sup>0?sup:null,rs:res<1e17?res:null});
+ const df=b-s;let dec=df>0?'CALL':df<0?'PUT':(mo>=0?'CALL':'PUT');out.edge=Math.abs(df);
+ if(at/px<CFG.minVol){R.push(['v0'])}else if(Math.max(b,s)<CFG.thr||Math.abs(df)<CFG.minDiff){R.push(['w0'])}
+ out.dec=dec;return out}
+/* ---- history ---- */
+let HIS=ls.g('his',[]).filter(h=>INS.some(x=>x.s===h.sym&&x.m===h.m));
+function resolve(){let ch=false;const n=now();HIS.forEach(h=>{if(h.res||n<h.exp)return;const i=INS.find(x=>x.s===h.sym&&x.m===h.m);if(!i){h.res='na';ch=true;return}h.p1=pr(i,h.exp);h.res=h.p1===h.p0?'na':((h.dec==='CALL')===(h.p1>h.p0)?'ok':'bad');ch=true});if(ch){ls.s('his',HIS);if(S.v==='inst')hist();if(S.v==='home')stats()}}
+const left=i=>Infinity;
+/* ---- UI ---- */
+const $=s=>document.querySelector(s),fmt=p=>p>=100?p.toFixed(2):p>=1?p.toFixed(4):p>=.01?p.toFixed(5):p.toFixed(8),tm=ts=>new Date(ts*1000).toLocaleTimeString('ru-RU');
+function go(v,x){S.v=v;if(v==='list'){S.cat=x;S.q='';S.mode='all'}if(v==='inst'){S.inst=x;S.sig=null}render();scrollTo(0,0)}
+function topbar(){return `<div class="bar">${LN.map((l,i)=>`<button class="pill ${S.lang===i?'on':''}" onclick="S.lang=${i};ls.s('lang',${i});render()">${l.toUpperCase()}</button>`).join('')}<span id="clk"></span><button class="pill" aria-label="refresh" onclick="render()">⟳</button>${S.v!=='home'?`<button class="pill" onclick="go(S.v==='inst'?'list':'home',S.cat)">← ${t('back')}</button>`:''}</div>`}
+function render(){document.documentElement.lang=['ru','en','uk'][S.lang];const a=$('#app');a.innerHTML=topbar()+({home,list,inst})[S.v]();if(S.v==='list')items();if(S.v==='inst'){hist();if(S.sig)draw()}else if(S.v==='home')stats();tick()}
+function home(){const cnt=c=>INS.filter(i=>i.c===c).length,ic={fx:'FX',cr:'CR',cm:'CM',eq:'EQ'};
+ return `<h1>${t('title')}</h1><div class="row">${['LIVE','OTC'].map(m=>`<button class="pill ${S.mode===m?'on':''}" onclick="S.mode=S.mode==='${m}'?'all':'${m}';render()">${m}</button>`).join('')}</div><p class="mu">${t('desc')}</p>`+
+ ['fx','cr','cm','eq'].map(c=>`<div class="card cat" onclick="go('list','${c}')"><div class="ico">${ic[c]}</div><div><h2 style="margin:0 0 4px">${t(c)}</h2><div class="mu" style="font-size:14px">${t(c+'d')}</div><div style="margin-top:8px"><span class="tag">${t('n',cnt(c))}</span></div></div><div class="go">→</div></div>`).join('')+`<div class="card"><h2 style="margin:0 0 6px;font-size:18px">${t('stat')}</h2><div id="st" class="mu"></div></div>`}
+function stats(){const e=$('#st');if(!e)return;const c=HIS.filter(h=>h.res);if(!c.length){e.textContent=t('nost');return}const ok=c.filter(h=>h.res==='ok').length,bd=c.filter(h=>h.res==='bad').length;e.textContent=t('stx',c.length,c.filter(h=>h.dec==='CALL').length,c.filter(h=>h.dec==='PUT').length,ok,bd,ok+bd?Math.round(ok/(ok+bd)*100)+'%':'—')}
+function list(){return `<div class="card"><h2 style="margin:0 0 4px">${t(S.cat)}</h2><div class="mu">${t(S.cat+'d')}</div><div class="row" style="margin:12px 0"><button class="btn" onclick="go('home')">⌂ ${t('home')}</button></div><div class="row"><input id="q" placeholder="${t('srch')}" value="${S.q}" oninput="S.q=this.value;items()" style="flex:1"><button class="btn" onclick="S.q='';S.mode='all';S.sort='az';render()">${t('reset')}</button></div><div class="row" style="margin-top:10px">${['all','LIVE','OTC'].map(m=>`<button class="pill ${S.mode===m||(m==='all'&&S.mode==='all')?'on':''}" onclick="S.mode='${m}';render()">${m==='all'?t('all'):m}</button>`).join('')}</div></div><div id="its"></div>`}
+function items(){let l=INS.filter(i=>i.c===S.cat&&i.s.toLowerCase().includes(S.q.toLowerCase())&&(S.mode==='all'||i.m===S.mode.toLowerCase()));l.sort((a,b)=>S.sort==='lim'?left(b)-left(a):a.s.localeCompare(b.s));
+ $('#its').innerHTML=l.map(i=>{const k=left(i)>0;return `<div class="card item ${k?'':'off'}" ${k?`onclick="go('inst',INS[${INS.indexOf(i)}])"`:''}><div style="flex:1"><div class="hd" style="font-size:20px;font-weight:800">${nm(i)}</div><div class="mu" style="font-size:13px">${t('st')}: ${k?t('ready'):'—'}</div></div><span class="btn">${t(i.c)}</span></div>`}).join('')||`<p class="mu">—</p>`}
+function inst(){const i=S.inst;return `<div class="card"><h2 style="margin:0">${t(i.c)}</h2><div class="mu">${t('instr')}: <b style="color:var(--tx)">${nm(i)}</b></div><div class="row" style="margin:12px 0"><button class="btn" onclick="go('list','${i.c}')">← ${t('tolist')}</button><button class="btn" onclick="go('home')">⌂ ${t('home')}</button></div>
+ <div class="mu">${t('price')} <span class="hd" style="font-size:24px;color:var(--tx)" id="px"></span> <span id="ch"></span> <span style="font-size:12px">${t('chg')}</span></div>
+ <div class="card" style="margin:12px 0 0"><div class="row" style="justify-content:space-between"><span class="mu hd">${t('sig')}</span><span class="tag">${S.busy?'<i class="sp"></i>':t('ready')}</span></div>
+ ${S.sig?res():'<div class="big mu">—</div>'}
+ <div class="mu hd" style="margin-top:14px">${t('time')}</div><div class="row" style="margin-top:6px">${[30,60,180,300].map(h=>`<button class="pill ${S.hz===h?'on':''}" onclick="S.hz=${h};S.sig=null;render()">${t('s'+h)}</button>`).join('')}</div>
+ ${S.hz===30?`<div class="mu" style="font-size:12px;margin-top:6px">${t('hz30')}</div>`:''}
+ <div class="row" style="margin-top:14px;justify-content:space-between"><button class="btn main" ${S.busy?'disabled':''} onclick="getSig()">${t('get')}</button><span class="tag">${t('s'+S.hz)}</span></div>
+ ${S.sig?`<div class="row" style="margin:14px 0 6px"><button class="btn" onclick="S.zoom=Math.max(30,S.zoom-20);draw()">${t('zin')}</button><button class="btn" onclick="S.zoom=Math.min(120,S.zoom+20);draw()">${t('zout')}</button></div><canvas id="cv"></canvas>`:`<div style="margin-top:14px;padding:30px 16px;text-align:center;border:1px dashed var(--ln);border-radius:18px" class="mu">${t('empty')}</div>`}</div></div>
+ <div class="card"><h2 style="margin:0 0 8px;font-size:18px">${t('hist')}</h2><div id="hs" style="overflow-x:auto"></div></div>`}
+const esc=s=>String(s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+async function ai0(r,cs,i){try{const sp=window.claude&&await claude.use('sample');if(!sp)return;const f=x=>+x.toPrecision(6),c=cs.slice(-30).map(k=>f(k.c));
+const p=`You are a market analyst reviewing a short-term technical setup (simulated demo data). Instrument ${i.s}, horizon ${S.hz}s, candle ${STEP[S.hz]}s. Last 30 closes: ${JSON.stringify(c)}. EMA9 ${f(r.e9)}, EMA21 ${f(r.e21)}, EMA50 ${f(r.e50)}, RSI ${f(r.rsi)}, MACD histogram ${f(r.mh)}, ATR% ${f(r.atrp*100)}. Rule engine says ${r.dec} (bull ${r.bull}, bear ${r.bear}). Independently decide CALL, PUT or WAIT for the next ${S.hz} seconds; choose WAIT when unclear. Never state a probability of profit. Reply text in ${['Russian','English','Ukrainian'][S.lang]}. Return only JSON: {"verdict":"CALL|PUT|WAIT","confidence":"low|medium|high","summary":"max 2 sentences","risks":"max 1 sentence"}`;
+const a=await sp.json(p);if(!['CALL','PUT','WAIT'].includes(a.verdict))a.verdict='WAIT';r.ai=a;if(r.dec!=='WAIT'&&a.verdict!==r.dec){r.dec='WAIT';r.aidis=1}}catch(e){}}
+async function ai(r,cs,i){const eng=r.dec;r.str=r.edge>=5?3:r.edge>=3?2:1;try{const sp=window.claude&&await claude.use('sample');if(!sp)return;const f=x=>x==null?null:+x.toPrecision(6),cl=cs.map(k=>k.c),ch=n=>f((cl[cl.length-1]/cl[cl.length-n]-1)*100);
+const p=`You are a senior short-term market analyst. Analyze this setup in depth (the data is simulated demo data). Instrument ${i.s}, forecast horizon ${S.hz}s, candle size ${STEP[S.hz]}s.
+Last 60 closes: ${JSON.stringify(cl.slice(-60).map(f))}
+Last 20 highs: ${JSON.stringify(cs.slice(-20).map(k=>f(k.h)))}
+Last 20 lows: ${JSON.stringify(cs.slice(-20).map(k=>f(k.l)))}
+Price change % over last 5/15/40/100 candles: ${ch(5)}, ${ch(15)}, ${ch(40)}, ${ch(100)}.
+EMA9 ${f(r.e9)}, EMA21 ${f(r.e21)}, EMA50 ${f(r.e50)}, RSI14 ${f(r.rsi)}, MACD histogram ${f(r.mh)}, ATR% ${f(r.atrp*100)}, nearest support ${f(r.sup)}, nearest resistance ${f(r.rs)}.
+Rule engine leans ${eng} (bull score ${r.bull}, bear score ${r.bear}).
+Consider trend structure on several windows, momentum and its exhaustion, support/resistance, volatility, and whether the engine's lean is consistent with the raw candles. You must choose exactly CALL (price higher after ${S.hz}s) or PUT (lower). Never state a probability of profit. Write text in ${['Russian','English','Ukrainian'][S.lang]}. Return only JSON: {"verdict":"CALL|PUT","confidence":"low|medium|high","factors":["3 to 4 short key factors"],"summary":"max 2 sentences","risks":"max 1 sentence"}`;
+const a=await sp.json(p);if(!['CALL','PUT'].includes(a.verdict))return;if(r.done){r.ai=a;r.late=1;if(S.sig===r&&S.v==='inst')render();return}r.ai=a;if(a.verdict===eng){r.str=Math.min(3,r.str+1)}else{r.conflict=1;r.str=1;if(a.confidence==='high'&&r.edge<3)r.dec=a.verdict}}catch(e){}}
+function aib(g){if(g.dec==='UNAVAILABLE')return'';const sl=t('strL')+': '+t('str'+(g.str||1))+(g.conflict?' · '+t('conf2'):'');const a=g.ai;if(!a)return `<div class="mu" style="font-size:13px;margin-top:8px">${sl}<br>${t('aiNo')}</div>`;return `<div class="card" style="margin:10px 0;padding:12px"><div class="hd">${t('aiT')}${g.late?' ('+t('aiLate')+')':''}: <span class="${a.verdict}">${a.verdict==='CALL'?'▲':'▼'}</span> <span class="mu" style="font-size:12px">(${t('conf')}: ${esc(a.confidence)})</span></div><div style="margin:4px 0;font-weight:700">${sl}</div><ul>${(Array.isArray(a.factors)?a.factors.slice(0,4):[]).map(x=>`<li>${esc(x)}</li>`).join('')}</ul><div>${esc(a.summary)}</div><div class="mu" style="font-size:13px">${t('risk')}: ${esc(a.risks)}</div><div class="mu" style="font-size:11px;margin-top:4px">${t('aiNote2')}</div></div>`}
+function aib0(g){if(g.dec==='UNAVAILABLE')return'';if(!g.ai)return `<div class="mu" style="font-size:13px;margin-top:8px">${t('aiNo')}</div>`;const a=g.ai;return `<div class="card" style="margin:10px 0;padding:12px"><div class="hd">${t('aiT')}: <span class="${a.verdict}">${a.verdict}</span> <span class="mu" style="font-size:12px">(${t('conf')}: ${esc(a.confidence)})</span></div><div>${esc(a.summary)}</div><div class="mu" style="font-size:13px">${t('risk')}: ${esc(a.risks)}</div>${g.aidis?`<div style="color:var(--wa);font-size:13px;margin-top:4px">${t('aiDis')}</div>`:''}<div class="mu" style="font-size:11px;margin-top:4px">${t('aiNote')}</div></div>`}
+function res(){const g=S.sig;return `<div class="big ${g.dec}">${t(g.dec).split(' — ')[0]}</div><div>${t(g.dec)}</div>${g.dec!=='UNAVAILABLE'?`<div class="mu" style="font-size:13px;margin-top:6px">${t('sc',g.bull,g.bear)}</div>`:''}${g.dec!=='UNAVAILABLE'?`<div style="font-weight:700;margin-top:6px">${t('strL')}: ${t('str'+(g.str||1))}</div>`:''}<details style="margin-top:8px"><summary class="hd" style="cursor:pointer">${t('fac')}</summary>${aib(g)}<ul>${g.reasons.map(r=>`<li>${t(r[0],r[1])}</li>`).join('')}</ul></details><div class="mu" style="font-size:13px">${tm(g.t)} · ${t('exp',tm(g.exp))} · <span id="cd"></span></div>`}
+function getSig(){S.busy=true;S.sig=null;render();setTimeout(()=>{if(S.busy){S.busy=false;S.sig={dec:'UNAVAILABLE',reasons:[['timeout']],done:1};render()}},6000);setTimeout(()=>{let n,i,cs,r;try{n=now();i=S.inst;cs=candles(i,S.hz,n);r=analyze(cs,S.hz,n);r.str=r.edge>=5?3:r.edge>=3?2:1;r.done=1}catch(e){r={dec:'UNAVAILABLE',reasons:[['Error: '+e.message]],done:1}}S.busy=false;S.sig=r;
+ if(r.dec==='CALL'||r.dec==='PUT'){try{HIS.unshift({sym:i.s,m:i.m,dec:r.dec,t:n,hz:S.hz,p0:r.price,exp:n+S.hz,p1:null,res:null,bull:r.bull,bear:r.bear});HIS=HIS.slice(0,200);ls.s('his',HIS)}catch(e){}}render();if(r.dec==='CALL'||r.dec==='PUT'){try{ai(r,cs,i).catch(()=>{})}catch(e){}}},300)}
+function hist(){const e=$('#hs');if(!e)return;const l=HIS.filter(h=>h.sym===S.inst.s&&h.m===S.inst.m).slice(0,10);e.innerHTML=l.length?`<table><tr><th>${t('time')}</th><th>${t('sig')}</th><th>${t('price')}</th><th>→</th><th></th></tr>${l.map(h=>`<tr><td>${tm(h.t)} (${h.hz}s)</td><td class="${h.dec}">${h.dec}</td><td>${fmt(h.p0)}</td><td>${h.p1?fmt(h.p1):'—'}</td><td>${h.res?t(h.res):t('pend')}</td></tr>`).join('')}</table>`:`<span class="mu">—</span>`}
+function draw(){const cv=$('#cv');if(!cv||!S.sig)return;const i=S.inst,cs=candles(i,S.hz).slice(-S.zoom),dpr=devicePixelRatio||1,W=cv.clientWidth,Ht=cv.clientHeight;cv.width=W*dpr;cv.height=Ht*dpr;const x=cv.getContext('2d');x.scale(dpr,dpr);
+ const all=candles(i,S.hz),c=all.map(k=>k.c),E=[[9,'#22d3ee'],[21,'#a78bfa'],[50,'#fbbf24']].map(([p,col])=>[ema(c,p).slice(-S.zoom),col]);
+ let hi=Math.max(...cs.map(k=>k.h)),lo=Math.min(...cs.map(k=>k.l));const pd=(hi-lo)*.08||hi*1e-4;hi+=pd;lo-=pd;const Y=p=>Ht-(p-lo)/(hi-lo)*(Ht-16)-8,w=W/cs.length;
+ x.strokeStyle='rgba(167,139,250,.12)';for(let g=1;g<5;g++){x.beginPath();x.moveTo(0,g*Ht/5);x.lineTo(W,g*Ht/5);x.stroke()}
+ cs.forEach((k,j)=>{const up=k.c>=k.o;x.strokeStyle=x.fillStyle=up?'#34d399':'#fb7185';const cx=j*w+w/2;x.beginPath();x.moveTo(cx,Y(k.h));x.lineTo(cx,Y(k.l));x.stroke();x.fillRect(cx-w*.35,Math.min(Y(k.o),Y(k.c)),w*.7,Math.max(1,Math.abs(Y(k.o)-Y(k.c))))});
+ E.forEach(([a,col])=>{x.strokeStyle=col;x.lineWidth=1.4;x.beginPath();a.forEach((v,j)=>j?x.lineTo(j*w+w/2,Y(v)):x.moveTo(w/2,Y(v)));x.stroke()});x.lineWidth=1;
+ HIS.filter(h=>h.sym===i.s&&h.m===i.m&&h.hz===S.hz).forEach(h=>{const j=cs.findIndex(k=>h.t>=k.s&&h.t<k.s+STEP[S.hz]);if(j<0)return;x.fillStyle=h.dec==='CALL'?'#34d399':'#fb7185';x.font='bold 12px sans-serif';x.fillText(h.dec==='CALL'?'▲':'▼',j*w,h.dec==='CALL'?Y(cs[j].l)+14:Y(cs[j].h)-4)})}
+function tick(){const n=now(),c=$('#clk');if(c)c.textContent=new Date().toLocaleTimeString('ru-RU');resolve();
+ if(S.v==='inst'){const i=S.inst,p=pr(i,n),p0=pr(i,n-300),e=$('#px');if(e){e.textContent=fmt(p);const d=(p/p0-1)*100,h=$('#ch');h.textContent=(d>=0?'+':'')+d.toFixed(3)+'%';h.style.color=d>=0?'var(--up)':'var(--dn)'}
+  const cd=$('#cd');if(cd&&S.sig)cd.textContent=n<S.sig.exp?t('left',S.sig.exp-n):'✓'}}
+setInterval(tick,1000);setInterval(()=>{if(S.v==='inst'&&S.sig)draw()},5000);addEventListener('resize',()=>{if(S.v==='inst'&&S.sig)draw()});
+const showErr=m=>{S.busy=false;const a=document.querySelector('#app');if(a)a.insertAdjacentHTML('afterbegin','<div class="demo" style="color:#fb7185">Error: '+esc(m)+'</div>')};
+addEventListener('unhandledrejection',e=>showErr(String((e.reason&&e.reason.message)||e.reason)));addEventListener('error',e=>showErr(String(e.message)));
+
+render();
+</script></body></html>
